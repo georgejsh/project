@@ -41,7 +41,7 @@ __global__ void findhash(int *d_qvert,int *d_qverc,int *d_qvid,int *d_qelist,boo
 	}
 	
 }
-"test"
+//"test"
 __global__ void setdeg1(int *d_qvert,int *d_qverc,int *d_qvid,bool *d_qtree)
 {
 	int i;
