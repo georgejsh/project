@@ -41,7 +41,6 @@ __global__ void findhash(int *d_qvert,int *d_qverc,int *d_qvid,int *d_qelist,boo
 	}
 	
 }
-"test"
 __global__ void setdeg1(int *d_qvert,int *d_qverc,int *d_qvid,bool *d_qtree)
 {
 	int i;
@@ -104,7 +103,7 @@ __global__ void puttoid(int *d_qvert,int *d_qverc,int *d_qvid,int *d_qelist,bool
 	d_qvid[ver]=id;
 	d_qidtov[id]=ver;
 }
-__device__ bool chechall(int ver,bool *check,int i,int dfrom,int dto,int *d_delist,int *d_qelist,int *d_qvid,int qfrom,int qto,bool ** d_dcvslist){
+__device__ bool chechall(int ver,bool *check,int i,int dfrom,int dto,int *d_delist,int *d_qelist,int *d_qvid,int qfrom,int qto,int ** d_dcvslist){
 	//int ql=qfrom-qto;
 	int ql=qto-qfrom;
 	int j,k,l;
@@ -146,7 +145,7 @@ __device__ bool chechall(int ver,bool *check,int i,int dfrom,int dto,int *d_deli
 	}
 	return false;
 }
-__global__ void findcvs(int ver,int *d_dvert,int *d_dverc,int *d_delist,int *d_qvert,int *d_qelist,int *d_qvid,bool ** d_dcvslist )
+__global__ void findcvs(int ver,int *d_dvert,int *d_dverc,int *d_delist,int *d_qvert,int *d_qelist,int *d_qvid,int ** d_dcvslist )
 {
 	//int i;
 	int dver=threadIdx.x*blockDim.y+threadIdx.y+blockDim.x*blockDim.y*(blockIdx.x*gridDim.y+blockIdx.y);
@@ -157,11 +156,20 @@ __global__ void findcvs(int ver,int *d_dvert,int *d_dverc,int *d_delist,int *d_q
 	if(ql>dl)
 		return;
 	bool *checked=(bool*)malloc(sizeof(bool)*d_dverc[0]);
+	//bool *checked=new bool[d_dverc[0]];
 	memset(checked,false,sizeof(bool)*d_dverc[0]);
 	//chechall(bool *check,int i,int dfrom,int dto,int *d_delist,int *d_qelist,int *d_qvid,int qfrom,int qto,bool ** d_dcvslist)
 	if(chechall(ver,checked,1,d_dvert[dver],d_dvert[dver+1],d_delist,d_qelist,d_qvid,d_qvert[ver],d_qvert[ver+1],d_dcvslist))
 		d_dcvslist[d_qvid[ver]][dver]=true;
 	free(checked);
+}
+__global__ void puttolist(int *d_dverc,int *d_loc,int * d_dcvslist )
+{
+	int dver=threadIdx.x*blockDim.y+threadIdx.y+blockDim.x*blockDim.y*(blockIdx.x*gridDim.y+blockIdx.y);
+	if(dver>=d_dverc[0])
+		return ;
+	if(d_loc[dver]!=d_loc[dver+1])
+		d_dcvslist[d_loc[dver]]=dver;
 }
 __global__ void checkperm(bool *found,int * qdmap,int * d_qverc,int * d_qelist,int * d_qvert,int * d_dvert,int *d_delist){
 	int i;
@@ -194,6 +202,65 @@ __global__ void checkperm(bool *found,int * qdmap,int * d_qverc,int * d_qelist,i
 		}
 	//}
 }
+
+__global__ void findall(int *d_mapans,int *d_cans,int *d_qvid,int * d_qverc,int * d_qelist,int * d_qvert,int * d_dvert,int *d_delist,int ** d_cvsverlist,int * d_size_cvs)
+{
+	bool found[1]={true};
+	long long int blockId = blockIdx.x 
+			 + blockIdx.y * gridDim.x 
+			 + gridDim.x * gridDim.y * blockIdx.z; 
+	long long int threadId = blockId * (blockDim.x * blockDim.y * blockDim.z)
+			  + (threadIdx.z * (blockDim.x * blockDim.y))
+			  + (threadIdx.y * blockDim.x)
+			  + threadIdx.x;
+	int i=0;
+	long long int indexperm=threadId;
+	for(i=0;i<d_qverc[0];i++){
+		int j=d_qvid[i];
+		indexperm/=d_size_cvs[j];
+	}
+	if(indexperm)
+		return;
+	indexperm=threadId;	
+	int *d_qdmap=&d_mapans[d_qverc[0]*threadId];
+	for(i=0;i<d_qverc[0];i++){
+		int j=d_qvid[i];
+		d_qdmap[i]=d_cvsverlist[j][indexperm%d_size_cvs[j]];
+		indexperm/=d_size_cvs[j];
+	}
+	
+	//dim3 blocks((max/16 )+ 1,(max/16)+1);
+	//dim3 threads(16,16);
+	//found[0]=true;
+	//checkperm<<<blocks,threads>>> (found,d_qdmap,d_qverc,d_qelist,d_qvert,d_dvert,d_delist);
+	int n,p,j,k,flag=0,ver;
+	for(ver=0;ver<d_qverc[0];ver++){
+		int l=d_qvert[ver+1];
+		int dver=d_qdmap[ver];
+		
+		n=d_dvert[dver+1];
+		for(i=d_qvert[ver];i<l;i++)
+		{
+			flag=0;
+			j=d_qelist[i];
+			p=d_dvert[dver];
+			k=d_qdmap[j];
+			for(;p<n;p++){
+				if(k==d_delist[p]){
+					flag=1;
+					break;
+				}
+			}
+			if(!flag){
+				*found=false;
+				return;
+			}
+		}
+	}
+	if(found[0]){
+		//printf("%d ", threadId);
+	}
+}
 int * qdmap;
 int *d_qverc,*d_dverc;
 int *d_qvid,*d_qidtov,*h_qidtov,*h_qvid;
@@ -201,7 +268,7 @@ int *d_qvert,*d_qelist,*d_dvert,*d_delist;//,*d_dvelist,*d_qvelist;
 bool *d_qtree,*d_over;	
 int *d_qdmap;
 bool h_over;
-void callforallperm(bool * check,bool ** cvslist,int i,int max,int dmax){
+/*void callforallperm(bool * check,int ** cvslist,int i,int max,int dmax){
 	int j,k,l;
 	l=h_qvid[i-1];
 	//printf("i%d %di",i,l);
@@ -246,11 +313,12 @@ void callforallperm(bool * check,bool ** cvslist,int i,int max,int dmax){
 			}
 		}
 	}
-}
+}*/
 
 int main(int argc, char **argv)
 {
-	
+	int deviceId = 4;
+	cudaSetDevice(deviceId);
 	int h_qverc,h_dverc;
 	
 	
@@ -260,13 +328,13 @@ int main(int argc, char **argv)
 	int *d_hash1,*d_hash2;
 	
 	int i,j;
-	bool **h_cvslist,**d_cvslist,**h_tem;
+	int **h_cvslist,**d_cvslist,**h_tem;
 	scanf("%d",&h_qverc);
 	h_qvert=(int *)malloc(sizeof(int)*(h_qverc+1));
 	h_qvid=(int *)malloc(sizeof(int)*(h_qverc+1));
 	h_qidtov=(int *)malloc(sizeof(int)*(h_qverc+1));
-	h_tem=(bool **)malloc(sizeof(bool*)*(h_qverc+1));
-	h_cvslist=(bool **)malloc(sizeof(bool*)*(h_qverc+1));
+	h_tem=(int **)malloc(sizeof(int*)*(h_qverc+1));
+	h_cvslist=(int **)malloc(sizeof(int*)*(h_qverc+1));
 	for(i=0;i<=h_qverc;i++){
 		scanf("%d",&h_qvert[i]);
 	}
@@ -288,7 +356,7 @@ int main(int argc, char **argv)
 		scanf("%d",&h_dvert[i]);
 	}
 	for(i=0;i<=h_qverc;i++)
-		h_cvslist[i]=(bool *)malloc(sizeof(bool)*(h_dverc+1));
+		h_cvslist[i]=(int *)malloc(sizeof(int)*(h_dverc+1));
 	
 	h_delist=(int *)malloc(sizeof(int)*h_dvert[h_dverc]);
 	for(i=0;i<h_dvert[h_dverc];i++)
@@ -379,13 +447,13 @@ int main(int argc, char **argv)
 	free(h_hash2);
 	free(h_qtree);
 	
-	cudaMalloc(&d_cvslist,sizeof(bool*)*(h_qverc+1));
+	cudaMalloc(&d_cvslist,sizeof(int*)*(h_qverc+1));
 	for(i=0;i<=h_qverc;i++){
-		cudaMalloc(&h_tem[i],sizeof(bool)*(h_dverc+1));
-		cudaMemset(h_tem[i],false,sizeof(bool)*(h_dverc+1));
+		cudaMalloc(&h_tem[i],sizeof(int)*(h_dverc+1));
+		cudaMemset(h_tem[i],0,sizeof(int)*(h_dverc+1));
 	}
-	cudaMemset(h_tem[1],true,sizeof(bool)*(h_dverc+1));
-	cudaMemcpy(d_cvslist,h_tem,sizeof(bool*)*(h_qverc+1),cudaMemcpyHostToDevice);
+	cudaMemset(h_tem[1],1,sizeof(int)*(h_dverc+1));
+	cudaMemcpy(d_cvslist,h_tem,sizeof(int*)*(h_qverc+1),cudaMemcpyHostToDevice);
 	cudaMalloc(&d_dvert,sizeof(int)*(h_dverc+1));
 	cudaMalloc(&d_dverc,sizeof(int));
 	cudaMalloc(&d_delist,sizeof(int)*h_dvert[h_dverc]);	
@@ -394,7 +462,25 @@ int main(int argc, char **argv)
 	cudaMemcpy(d_delist,h_delist,sizeof(int)*h_dvert[h_dverc],cudaMemcpyHostToDevice);
 	dim3 dblocks((h_dverc/16 )+ 1,(h_dverc/16)+1);
 	dim3 dthreads(16,16);
-	memset(h_cvslist[1],true,sizeof(int)*(h_dverc+1));
+	int **d_cvsverlist,**d_temverlist;
+	int *d_size_cvs,*h_size_cvs;
+	memset(h_cvslist[1],1,sizeof(int)*(h_dverc+1));
+	h_size_cvs=(int *)malloc(sizeof(int)*(h_qverc+1));
+	memset(h_size_cvs,0,sizeof(int)*(h_qverc+1));
+	cudaMalloc(&d_size_cvs,sizeof(int)*(h_qverc+1));
+	cudaMemset(d_size_cvs,0,sizeof(int)*(h_qverc+1));
+	cudaMalloc(&d_cvsverlist,sizeof(int*)*(h_qverc+1));
+	d_temverlist=(int **)malloc(sizeof(int*)*(h_qverc+1));
+	for(i=0;i<=h_qverc;i++){
+		cudaMalloc(&d_temverlist[i],sizeof(int)*(h_dverc+1));
+		cudaMemset(d_temverlist[i],0,sizeof(int)*(h_dverc+1));
+	}
+	cudaMemcpy(d_cvsverlist,d_temverlist,sizeof(int*)*(h_qverc+1),cudaMemcpyHostToDevice);
+	long long int totalthreads=1;
+	for(i=0;i<h_dverc;i++)
+		h_cvslist[1][i]=i;
+	cudaMemcpy(d_temverlist[1],h_cvslist[1],sizeof(int)*(h_dverc+1),cudaMemcpyHostToDevice);
+	h_size_cvs[1]=h_dverc;
 	for(i=0;i<=h_qverc;i++)
 	{
 		if(h_qidtov[i]!=-1)
@@ -404,20 +490,58 @@ int main(int argc, char **argv)
 		findcvs<<<dblocks,dthreads>>>(h_qidtov[i],d_dvert,d_dverc,d_delist,d_qvert,d_qelist,d_qvid,d_cvslist);
 		cudaError_t err = cudaGetLastError();
 	
-		cudaMemcpy(h_cvslist[i],h_tem[i],sizeof(bool)*(h_dverc+1),cudaMemcpyDeviceToHost);
+		cudaMemcpy(h_cvslist[i],h_tem[i],sizeof(int)*(h_dverc+1),cudaMemcpyDeviceToHost);
 		for(j=0;j<=h_dverc;j++)
 			if(h_cvslist[i][j])
 				printf("%d ",j);
 		printf("\n");
 		//printf("%d ",h_qidtov[i]);
-		}
+		thrust::exclusive_scan(h_cvslist[i],h_cvslist[i]+h_dverc+1,h_cvslist[i]);
+		h_size_cvs[i]=h_cvslist[i][h_dverc];
+		cudaMemcpy(h_tem[i],h_cvslist[i],sizeof(int)*(h_dverc+1),cudaMemcpyHostToDevice);
+		puttolist<<<dblocks,dthreads>>>(d_dverc,h_tem[i],d_temverlist[i]);
+	//	cudaMemcpy(h_cvslist[i],d_temverlist[i],sizeof(int)*(h_dverc+1),cudaMemcpyDeviceToHost);
+	//	for(j=0;j<=h_dverc;j++)
+	//		printf("%d ",h_cvslist[i][j]);	
+		}	
+		
 	}
-	printf("Start");
-	bool * check=(bool *)malloc(sizeof(bool)*(h_dverc+1));
-	memset(check,false,sizeof(bool)*(h_dverc+1));
-	qdmap=(int *)malloc(sizeof(int)*(h_qverc+1));
-	cudaMalloc(&d_qdmap,sizeof(int)*(h_qverc+1));
-	callforallperm(check,h_cvslist,1,h_qverc,h_dverc);
+	//	cudaMemcpy(h_delist,d_delist,sizeof(int)*(h_dvert[h_dverc]),cudaMemcpyDeviceToHost);
+	//	for(j=0;j<h_dvert[h_dverc];j++)
+	//		printf("%d ",h_delist[j]);	
+			
+	for(i=0;i<h_qverc;i++)
+		if(h_size_cvs[h_qvid[i]])
+		totalthreads*=h_size_cvs[h_qvid[i]];
+	printf("Start %lld\n",totalthreads);
+	cudaMemcpy(d_size_cvs,h_size_cvs,sizeof(int)*(h_qverc+1),cudaMemcpyHostToDevice);
+	//totalthreads=1000;
+	dim3 dpblocks(((int)(totalthreads/8 )+ 1),((int)(totalthreads/8)+1),((int)(totalthreads/8)+1));
+	dim3 dpthreads(8,8,8);
+	 int *d_mapans,*d_countans,*h_countans;
+	cudaMalloc(&d_mapans,sizeof( int)*totalthreads*(h_qverc+1));
+	cudaMalloc(&d_countans,sizeof( int)*(totalthreads+1));
+	cudaMemset(d_countans,0,sizeof( int)*(totalthreads+1));
+	h_countans=(int *)malloc(sizeof(int)*(totalthreads+1));
+	//h_countans=0;
+	//cudaMemcpy(d_countans, &h_countans, sizeof( int), cudaMemcpyHostToDevice) ;
+	//cudaMemcpy(&h_countans, d_qverc, sizeof(int), cudaMemcpyDeviceToHost) ;
+	//printf("%d\n",h_countans);
+	findall<<<dpblocks,dpthreads>>> (d_mapans,d_countans,d_qvid,d_qverc,d_qelist,d_qvert,d_dvert,d_delist,d_cvsverlist,d_size_cvs);
+	cudaMemcpy(h_countans, d_countans, sizeof(int)*(totalthreads+1), cudaMemcpyDeviceToHost) ;
+	thrust::exclusive_scan(h_countans,h_countans+totalthreads+1,h_countans);
+	printf("%d\n",h_countans[totalthreads] );
+	//printf("%d\n",h_countans);
+	/*j=0;
+	for(i=0;i<totalthreads;i++)
+		if(h_countans[i])
+			j++;
+	printf("%d\n",j);
+	*///bool * check=(bool *)malloc(sizeof(bool)*(h_dverc+1));
+	//memset(check,false,sizeof(bool)*(h_dverc+1));
+	//qdmap=(int *)malloc(sizeof(int)*(h_qverc+1));
+	//cudaMalloc(&d_qdmap,sizeof(int)*(h_qverc+1));
+	//callforallperm(check,h_cvslist,1,h_qverc,h_dverc);
 
 	cudaFree(d_over);
 	cudaFree(d_qverc);
@@ -429,7 +553,8 @@ int main(int argc, char **argv)
 	cudaFree(d_delist);
 	cudaFree(d_dverc);
 	cudaFree(d_cvslist);
-	
+	cudaFree(d_cvsverlist);
+	cudaFree(d_size_cvs);
 	/*free(h_qvid);
 	free(h_qvert);
 	//free(h_qelist);
