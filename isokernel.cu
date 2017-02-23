@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include "device_launch_parameters.h"
 #include <thrust/scan.h>
+#include <thrust/device_vector.h>
+#include <thrust/count.h>
 const int BASE1 = 10000 + 7;
 const int BASE2 = 100000 + 3;
 const int MOD1 = 1000000 + 3;
@@ -222,7 +224,7 @@ __global__ void findall(int *d_mapans,int *d_cans,int *d_qvid,int * d_qverc,int 
 	if(indexperm)
 		return;
 	indexperm=threadId;	
-	int *d_qdmap=&d_mapans[threadId*d_qverc[0]];//new int[d_qverc[0]];
+	int *d_qdmap=&d_mapans[d_qverc[0]*threadId];//new int[d_qverc[0]];
 	for(i=0;i<d_qverc[0];i++){
 		int j=d_qvid[i];
 		d_qdmap[i]=d_cvsverlist[j][indexperm%d_size_cvs[j]];
@@ -258,9 +260,9 @@ __global__ void findall(int *d_mapans,int *d_cans,int *d_qvid,int * d_qverc,int 
 		}
 	}
 	if(found[0]){
-		d_cans[threadId]=1;
-		//printf("%d ", threadId);
+		d_cans[threadId]=1;	//printf("%d ", threadId);
 	}
+	//delete d_qdmap;
 }
 int * qdmap;
 int *d_qverc,*d_dverc;
@@ -384,7 +386,7 @@ int main(int argc, char **argv)
 	cudaMemset(d_qvid,0,sizeof(int)*(h_qverc+1));
 	int *h_hash1=(int *)malloc(sizeof(int)*1000038);
 	int *h_hash2=(int *)malloc(sizeof(int)*1000038);
-	dim3 blocks((h_qverc/16 )+ 1,(h_qverc/16)+1);
+	dim3 blocks((sqrt(h_qverc)/16 )+ 1,(sqrt(h_qverc)/16)+1);
 	dim3 threads(16,16);
 	
 	//int *d_qvert,int *d_dverc,int *d_qvid,int *d_qelist,bool *d_over,bool *d_hash1,bool *d_hash2)
@@ -461,7 +463,7 @@ int main(int argc, char **argv)
 	cudaMemcpy(d_dverc,&h_dverc,sizeof(int),cudaMemcpyHostToDevice);
 	cudaMemcpy(d_dvert,h_dvert,sizeof(int)*(h_dverc+1),cudaMemcpyHostToDevice);
 	cudaMemcpy(d_delist,h_delist,sizeof(int)*h_dvert[h_dverc],cudaMemcpyHostToDevice);
-	dim3 dblocks((h_dverc/16 )+ 1,(h_dverc/16)+1);
+	dim3 dblocks((sqrt(h_dverc)/16 )+ 1,(sqrt(h_dverc)/16)+1);
 	dim3 dthreads(16,16);
 	int **d_cvsverlist,**d_temverlist;
 	int *d_size_cvs,*h_size_cvs;
@@ -517,22 +519,25 @@ int main(int argc, char **argv)
 	printf("Start %lld\n",totalthreads);
 	cudaMemcpy(d_size_cvs,h_size_cvs,sizeof(int)*(h_qverc+1),cudaMemcpyHostToDevice);
 	//totalthreads=1000;
-	dim3 dpblocks(((int)(totalthreads/16 )+ 1),((int)(totalthreads/16)+1));
+	dim3 dpblocks(((int)(sqrt(totalthreads)/16 )+ 1),((int)(sqrt(totalthreads)/16)+1));
 	dim3 dpthreads(16,16);
 	 int *d_mapans,*d_countans,*h_countans;
 	cudaMalloc(&d_mapans,sizeof( int)*totalthreads*(h_qverc+1));
 	cudaMalloc(&d_countans,sizeof( int)*(totalthreads+1));
 	cudaMemset(d_countans,0,sizeof( int)*(totalthreads+1));
-	h_countans=(int *)malloc(sizeof(int)*(totalthreads+1));
+	//h_countans=(int *)malloc(sizeof(int)*(totalthreads+1));
 	//h_countans=0;
 	//cudaMemcpy(d_countans, &h_countans, sizeof( int), cudaMemcpyHostToDevice) ;
 	//cudaMemcpy(&h_countans, d_qverc, sizeof(int), cudaMemcpyDeviceToHost) ;
 	//printf("%d\n",h_countans);
 	findall<<<dpblocks,dpthreads>>> (d_mapans,d_countans,d_qvid,d_qverc,d_qelist,d_qvert,d_dvert,d_delist,d_cvsverlist,d_size_cvs);
-	cudaMemcpy(h_countans, d_countans, sizeof(int)*totalthreads, cudaMemcpyDeviceToHost) ;
-	thrust::exclusive_scan(h_countans,h_countans+totalthreads+1,h_countans);
-	printf("%d\n",h_countans[totalthreads-1] );
+	thrust::device_ptr<int> cptr=thrust::device_pointer_cast(d_countans);
+	//int sum=thrust::count(cptr,cptr+totalthreads,1);
+	//cudaMemcpy(h_countans, d_countans, sizeof(int)*totalthreads, cudaMemcpyDeviceToHost) ;
+	//thrust::exclusive_scan(h_countans,h_countans+totalthreads+1,h_countans);
+	//printf("%d\n",h_countans[totalthreads-1] );
 	//printf("%d\n",h_countans);
+	//printf("%d\n",sum);
 	/*j=0;
 	for(i=0;i<totalthreads;i++)
 		if(h_countans[i])
