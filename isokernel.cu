@@ -222,7 +222,7 @@ __global__ void findall(int *d_mapans,int *d_cans,int *d_qvid,int * d_qverc,int 
 	if(indexperm)
 		return;
 	indexperm=threadId;	
-	int *d_qdmap=&d_mapans[d_qverc[0]*threadId];
+	int *d_qdmap=&d_mapans[threadId*d_qverc[0]];//new int[d_qverc[0]];
 	for(i=0;i<d_qverc[0];i++){
 		int j=d_qvid[i];
 		d_qdmap[i]=d_cvsverlist[j][indexperm%d_size_cvs[j]];
@@ -517,8 +517,8 @@ int main(int argc, char **argv)
 	printf("Start %lld\n",totalthreads);
 	cudaMemcpy(d_size_cvs,h_size_cvs,sizeof(int)*(h_qverc+1),cudaMemcpyHostToDevice);
 	//totalthreads=1000;
-	dim3 dpblocks(((int)(totalthreads/8 )+ 1),((int)(totalthreads/8)+1),((int)(totalthreads/8)+1));
-	dim3 dpthreads(8,8,8);
+	dim3 dpblocks(((int)(totalthreads/16 )+ 1),((int)(totalthreads/16)+1));
+	dim3 dpthreads(16,16);
 	 int *d_mapans,*d_countans,*h_countans;
 	cudaMalloc(&d_mapans,sizeof( int)*totalthreads*(h_qverc+1));
 	cudaMalloc(&d_countans,sizeof( int)*(totalthreads+1));
@@ -529,9 +529,9 @@ int main(int argc, char **argv)
 	//cudaMemcpy(&h_countans, d_qverc, sizeof(int), cudaMemcpyDeviceToHost) ;
 	//printf("%d\n",h_countans);
 	findall<<<dpblocks,dpthreads>>> (d_mapans,d_countans,d_qvid,d_qverc,d_qelist,d_qvert,d_dvert,d_delist,d_cvsverlist,d_size_cvs);
-	cudaMemcpy(h_countans, d_countans, sizeof(int)*(totalthreads+1), cudaMemcpyDeviceToHost) ;
+	cudaMemcpy(h_countans, d_countans, sizeof(int)*totalthreads, cudaMemcpyDeviceToHost) ;
 	thrust::exclusive_scan(h_countans,h_countans+totalthreads+1,h_countans);
-	printf("%d\n",h_countans[totalthreads] );
+	printf("%d\n",h_countans[totalthreads-1] );
 	//printf("%d\n",h_countans);
 	/*j=0;
 	for(i=0;i<totalthreads;i++)
