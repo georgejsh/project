@@ -258,6 +258,7 @@ __global__ void findall(int *d_mapans,int *d_cans,int *d_qvid,int * d_qverc,int 
 		}
 	}
 	if(found[0]){
+		d_cans[threadId]=1;
 		//printf("%d ", threadId);
 	}
 }
