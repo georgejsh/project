@@ -171,7 +171,7 @@ __global__ void puttolist(int *d_dverc,int *d_loc,int * d_dcvslist )
 	if(d_loc[dver]!=d_loc[dver+1])
 		d_dcvslist[d_loc[dver]]=dver;
 }
-__global__ void checkperm(bool *found,int * qdmap,int * d_qverc,int * d_qelist,int * d_qvert,int * d_dvert,int *d_delist,bool *d_qtree){
+__global__ void checkperm(int *found,int * qdmap,int * d_qverc,int * d_qelist,int * d_qvert,int * d_dvert,int *d_delist,bool *d_qtree){
 	int i;
 	//found[0]=false;
 	int ver=threadIdx.x*blockDim.y+threadIdx.y+blockDim.x*blockDim.y*(blockIdx.x*gridDim.y+blockIdx.y);
@@ -200,11 +200,11 @@ __global__ void checkperm(bool *found,int * qdmap,int * d_qverc,int * d_qelist,i
 			if(!flag){
 				//*found=false;
 				if(d_qtree[i]){				
-					found[0]=found[1]=false;		
+					found[0]=found[1]=-1;		
 					return;
 				}
 				else
-					found[1]=false;
+					found[1]=0,found[0]++;
 			}
 		}
 	//}
@@ -221,6 +221,7 @@ bool *h_qtree;
 int *d_size_cvs,*h_size_cvs,ansi=0,treeansi=0;
 long long int * h_anslist,*d_anslist;
 long long int * h_treeanslist,*d_treeanslist;
+int *h_treeremlist,*d_treeremlist;
 __global__ void processoperation(int type,int a,int b,int nans,long long int *anslist,int *qverc,int *dverc,int *qvert,int *qelist,int *dvert,int *delist,int **cvsverlist,int *size_cvs,int *qvid){
 	int ansi=threadIdx.x*blockDim.y+threadIdx.y+blockDim.x*blockDim.y*(blockIdx.x*gridDim.y+blockIdx.y);
 	if(ansi>=nans)
@@ -266,23 +267,40 @@ __global__ void processoperation(int type,int a,int b,int nans,long long int *an
 		anslist[ansi]=-1;
 }
 
-__global__ void processqd(int type,int a,int b,int ntans,long long int *tanslist,int *qverc,int *dverc,int *qvert,int *qelist,int *dvert,int *delist,int **cvsmat,int *size_cvs,int *qvid,int *qtree){
+__global__ void processqdnontree(int type,int a,int b,int ntans,long long int *tanslist,int *tremlist,int *qverc,int *dverc,int *qvert,int *qelist,int *dvert,int *delist,int **cvsverlist,int *size_cvs,int *qvid){
 	int ansi=threadIdx.x*blockDim.y+threadIdx.y+blockDim.x*blockDim.y*(blockIdx.x*gridDim.y+blockIdx.y);
-	if(ansi>=nans)
+	if(ansi>=ntans)
 		return ;
-	long long int indexperm=anslist[ansi];
-	if(indexperm==-1)
+	long long int indexperm=tanslist[ansi];
+	if(tremlist[ansi]==0)
 		return;
         int mapvera,mapverb=-1;
+	int *aedges=NULL,till,i;
 	for(i=0;i<qverc[0];i++){
                 int j=qvid[i];
-//                printf("j%d %d %d %dj ",i,j,size_cvs[j],mapvera);
+		if(i==a)
 			mapvera=cvsverlist[j][indexperm%size_cvs[j]],aedges=&delist[dvert[mapvera]],till=dvert[mapvera+1];
+		else if(i==b)
+			mapverb=cvsverlist[j][indexperm%size_cvs[j]];
                 indexperm/=size_cvs[j];
         }
+	
+	bool flag=false;
+//		anslist[ansi]=-1;
+	if(aedges==NULL || mapverb==-1 || indexperm>0)
+		return;
+//	printf("j%d %dj",aedges[0],mapverb);
+	for(i=0;i<till;i++){
+		if(aedges[i]==mapverb){
+			flag=true;
+			break;
+		}
+	}
+	if(!flag)
+		 atomicDec((unsigned int *)&tremlist[ansi],tremlist[ansi]);
 }
 
-__global__ void doquery(int *nquery,int * type,int * vera,int * verb,int *ntans,long long int * tanslist,int *nans,long long int * anslist,int ** cvsmatrix,int **cvslist,int *qverc,int *dverc,int *qvert,int *qelist,int *dvert,int *delist,int *size_cvs,int *qvid,int *qtree){
+__global__ void doquery(int *nquery,int * type,int * vera,int * verb,int *ntans,long long int * tanslist,int *tremlist,int *nans,long long int * anslist,int ** cvsmatrix,int **cvslist,int *qverc,int *dverc,int *qvert,int *qelist,int *dvert,int *delist,int *size_cvs,int *qvid,bool *qtree){
 	
 	int qi=threadIdx.x*blockDim.y+threadIdx.y+blockDim.x*blockDim.y*(blockIdx.x*gridDim.y+blockIdx.y);
 	if(qi>=nquery[0])
@@ -297,7 +315,24 @@ __global__ void doquery(int *nquery,int * type,int * vera,int * verb,int *ntans,
 		processoperation<<<blocks,threads>>>(type[qi],vera[qi],verb[qi],nans[0],anslist,qverc,dverc,qvert,qelist,dvert,delist,cvslist,size_cvs,qvid);
 	}
 	else if(type[qi]==3){
-		processqd<<<blocks,threads>>>(type[qi],vera[qi],verb[qi],ntans[0],tanslist,qverc,dverc,qvert,qelist,dvert,delist,cvsmatrix,size_cvs,qvid,qtree);
+		int l=qvert[vera[qi]+1],i;
+		bool flag=false,istree=false;
+		for(i=qvert[vera[qi]];i<l;i++){
+			if(qelist[i]==verb[qi]){
+				flag=true;
+				if(qtree[i])
+					istree=true;
+				break;
+			}
+		}
+		if(!flag)
+			return;
+		if(!istree){
+			processqdnontree<<<blocks,threads>>>(type[qi],vera[qi],verb[qi],ntans[0],tanslist,tremlist,qverc,dverc,qvert,qelist,dvert,delist,cvslist,size_cvs,qvid);
+		}
+		else{
+			//processqdtree<<<blocks,threads>>>(type[qi],vera[qi],verb[qi],ntans[0],tanslist,tremlist,qverc,dverc,qvert,qelist,dvert,delist,cvslist,size_cvs,qvid);
+		}
 	}
 	else{
 	}
@@ -315,11 +350,12 @@ void callforallperm(bool * check,int ** cvslist,int i,int max,int dmax,long long
 				//mapid+=j*h_size_cvs[l];
 				dim3 blocks((sqrt(max)/16 )+ 1,(sqrt(max)/16)+1);
 				dim3 threads(16,16);
-				bool h_over[2]={true,true};
-				
-				cudaMemcpy(d_over, h_over, sizeof(bool)*2, cudaMemcpyHostToDevice) ;
+				int h_found[2]={0,1};
+				int *d_found;
+				cudaMalloc(&d_found,sizeof(int)*2);
+				cudaMemcpy(d_found, h_found, sizeof(int)*2, cudaMemcpyHostToDevice) ;
 				cudaMemcpy(d_qdmap, qdmap, sizeof(int)*(max+1), cudaMemcpyHostToDevice);
-				checkperm<<<blocks,threads>>> (d_over,d_qdmap,d_qverc,d_qelist,d_qvert,d_dvert,d_delist,d_qtree);
+				checkperm<<<blocks,threads>>> (d_found,d_qdmap,d_qverc,d_qelist,d_qvert,d_dvert,d_delist,d_qtree);
 				//checkperm(bool *found,int * qdmap,int * d_qverc,int * d_qelist,int * d_qvert,int * d_dvert,int *d_delist)
 				cudaError_t err = cudaGetLastError();
 					if(err!=cudaSuccess)
@@ -327,16 +363,17 @@ void callforallperm(bool * check,int ** cvslist,int i,int max,int dmax,long long
 						printf("Error: %s\n", cudaGetErrorString(err));
 						printf("Not Ok");
 					}
-				cudaMemcpy(h_over, d_over, sizeof(bool)*2, cudaMemcpyDeviceToHost) ;
-				if(h_over[1]){
+				cudaMemcpy(h_found, d_found, sizeof(int)*2, cudaMemcpyDeviceToHost) ;
+				if(h_found[1]==1){
 					//for(k=0;k<max;k++)
 					//	printf("%d ",qdmap[k]);
 					//printf("\n");
 					//	printf("OK\n");
 					h_anslist[ansi++]=mapid*h_size_cvs[l]+j;
 				}
-				else if(h_over[0]){
+				else if(h_found[0]!=-1){
 					h_treeanslist[treeansi++]=mapid*h_size_cvs[l]+j;
+					h_treeremlist[treeansi++]=h_found[0]/2;
 				}
 				//printf("\n");
 			}
@@ -524,6 +561,7 @@ int main(int argc, char **argv)
 	h_size_cvs[1]=h_dverc;
 	bool *d_tempcheck;	
 	cudaMalloc(&d_tempcheck,sizeof(bool)*(h_dvert[h_dverc]+1));	
+	printf("Starting cvs find\n");
 	for(i=0;i<=h_qverc;i++)
 	{
 		if(h_qidtov[i]!=-1)
@@ -534,24 +572,24 @@ int main(int argc, char **argv)
 		findcvs<<<dblocks,dthreads>>>(d_tempcheck,h_qidtov[i],d_dvert,d_dverc,d_delist,d_qvert,d_qelist,d_qvid,d_cvslist);
 		cudaError_t err = cudaGetLastError();
 	
+		printf("id %d \n",i);
 		cudaMemcpy(h_cvslist[i],h_tem[i],sizeof(int)*(h_dverc+1),cudaMemcpyDeviceToHost);
 		//printf("%d ",h_qidtov[i]);
 		thrust::exclusive_scan(h_cvslist[i],h_cvslist[i]+h_dverc+1,h_temploc);
 		h_size_cvs[i]=h_temploc[h_dverc];
 		cudaMemcpy(h_tem[i],h_temploc,sizeof(int)*(h_dverc+1),cudaMemcpyHostToDevice);
 		puttolist<<<dblocks,dthreads>>>(d_dverc,h_tem[i],d_temverlist[i]);
-		printf("id %d ",i);
-		for(j=0;j<=h_dverc;j++)
-			if(h_cvslist[i][j])
-				printf("%d ",j);
-		printf("\n");
+		//for(j=0;j<=h_dverc;j++)
+		//	if(h_cvslist[i][j])
+		//		printf("%d ",j);
+		//printf("\n");
 	//	cudaMemcpy(h_cvslist[i],d_temverlist[i],sizeof(int)*(h_dverc+1),cudaMemcpyDeviceToHost);
-		cudaMemcpy(h_temploc,h_tem[i],sizeof(int)*(h_size_cvs[i]),cudaMemcpyDeviceToHost);
-		printf("On list");
-		for(j=0;j<h_size_cvs[i];j++)
-			printf("%d ",h_temploc[j]);
-		printf("\n");	
-		printf("size %d",h_size_cvs[i]);
+		//cudaMemcpy(h_temploc,h_tem[i],sizeof(int)*(h_size_cvs[i]),cudaMemcpyDeviceToHost);
+		//printf("On list");
+		//for(j=0;j<h_size_cvs[i];j++)
+		//	printf("%d ",h_temploc[j]);
+		//printf("\n");	
+		printf("size %d\n",h_size_cvs[i]);
 		}	
 		
 	}
@@ -565,10 +603,12 @@ int main(int argc, char **argv)
 	memset(check,false,sizeof(bool)*(h_dverc+1));
 	qdmap=(int *)malloc(sizeof(int)*(h_qverc+1));
 	cudaMalloc(&d_qdmap,sizeof(int)*(h_qverc+1));
-	h_anslist=(long long *)malloc(sizeof(long long int)*1000001);
+	h_anslist=(long long int *)malloc(sizeof(long long int)*1000001);
 	cudaMalloc(&d_anslist,sizeof(long long int)*(1000001));
-	h_treeanslist=(long long *)malloc(sizeof(long long int)*1000001);
+	h_treeanslist=(long long int*)malloc(sizeof(long long int)*1000001);
 	cudaMalloc(&d_treeanslist,sizeof(long long int)*(1000001));
+	h_treeremlist=(int *)malloc(sizeof(int)*1000001);
+	cudaMalloc(&d_treeremlist,sizeof(int)*(1000001));
 	ansi=0;
 	callforallperm(check,h_cvslist,1,h_qverc,h_dverc,0);
 	
@@ -581,9 +621,10 @@ int main(int argc, char **argv)
 	cudaMalloc(&d_treeansi,sizeof(int));
 	cudaMemcpy(d_treeansi,&treeansi,sizeof(int),cudaMemcpyHostToDevice);
 	cudaMemcpy(d_treeanslist,h_treeanslist,sizeof(long long int)*(treeansi),cudaMemcpyHostToDevice);
+	cudaMemcpy(d_treeremlist,h_treeremlist,sizeof(int)*(treeansi),cudaMemcpyHostToDevice);
 	
 
-	int nqueries,*d_nqueries;
+/*	int nqueries,*d_nqueries;
 	int *h_vera,*h_verb;
 	int *d_vera,*d_verb;
 	int *h_type,*d_type;
@@ -610,14 +651,14 @@ int main(int argc, char **argv)
 	dim3 qblocks((sqrt(nqueries)/16 )+ 1,(sqrt(nqueries)/16)+1);
 	dim3 qthreads(16,16);
 
-	doquery<<<qblocks,qthreads>>>(d_nqueries,d_type,d_vera,d_verb,d_treeansi,d_treeanslist,d_ansi,d_anslist,d_cvslist,d_cvsverlist,d_qverc,d_dverc,d_qvert,d_qelist,d_dvert,d_delist,d_size_cvs,d_qvid,d_qtree);
+	doquery<<<qblocks,qthreads>>>(d_nqueries,d_type,d_vera,d_verb,d_treeansi,d_treeanslist,d_treeremlist,d_ansi,d_anslist,d_cvslist,d_cvsverlist,d_qverc,d_dverc,d_qvert,d_qelist,d_dvert,d_delist,d_size_cvs,d_qvid,d_qtree);
 
 	
 	cudaMemcpy(h_anslist,d_anslist,sizeof(long long int)*(ansi),cudaMemcpyDeviceToHost);
 	for(i=0;i<ansi;i++)
 		if(h_anslist[i]==-1)
 			printf(" %d ",i);
-	cudaFree(d_over);
+*/	cudaFree(d_over);
 	cudaFree(d_qverc);
 	cudaFree(d_qvert);
 	cudaFree(d_qelist);

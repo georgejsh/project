@@ -7,11 +7,18 @@ bool * vis;
 int verc,avgoutdeg,i,j,k,l,m,ei=0;
 void dfs(int i){
   int j;
+  std::queue<int> q;
+  q.push(i);
   vis[i]=true;
-  for(j=ver[i];j<ver[i+1];j++){
-    if(!vis[edge[j]]){
-      dfs(edge[j]);
-      tree[j]=1;
+  while(!q.empty()){
+    i=q.front();
+    q.pop();
+    for(j=ver[i];j<ver[i+1];j++){
+      if(!vis[edge[j]]){
+        vis[edge[j]]=true;
+        q.push(edge[j]);
+        tree[j]=1;
+      }
     }
   }
 }
@@ -34,24 +41,26 @@ int main()
   avgoutdeg=verc-1;
  //printf("Variance: ");
  scanf("%f",&var);
- var*=verc;
+ //var*=verc;
  edge=(int *)malloc(sizeof(int)*(verc*(avgoutdeg+var)));
  tree=(int *)malloc(sizeof(int)*(verc*(avgoutdeg+var)));
  memset(tree,0,sizeof(int)*(verc*(avgoutdeg+var)));
- maxvar=floor(sqrt(var));
+ maxvar=var;//floor(sqrt(var));
  printf("%d\n",verc);
  for(i=0;i<verc;i++)
  {
   ran=(int)rand();
   //printf("%f",ran);
   if(maxvar)
-   j=avgoutdeg-maxvar+(int)ran%((int)(maxvar*2+1));
+   j=avgoutdeg-maxvar+(int)ran%((int)(2*maxvar));
   else
    j=avgoutdeg;
+  j=std::min(j,verc);
+  j=std::max(j,0);
   ver[i]=curravg;
   curravg+=j;
-  currvar+=(j-avgoutdeg)*(j-avgoutdeg);
- // printf("%d\n",j);
+  //currvar+=(j-avgoutdeg)*(j-avgoutdeg);
+  //printf("%d %d\n",i,j);
   for(k=0;k<j;)
   {
    ran=rand();
