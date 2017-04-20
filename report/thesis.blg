@@ -1,0 +1,61 @@
+This is BibTeX, Version 0.99d (TeX Live 2016/Debian)
+Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
+The top-level auxiliary file: thesis.aux
+The style file: iitm.bst
+A level-1 auxiliary file: parts/certificate.aux
+A level-1 auxiliary file: parts/acknowledgement.aux
+A level-1 auxiliary file: parts/abstract.aux
+A level-1 auxiliary file: parts/chapters/introduction.aux
+A level-1 auxiliary file: parts/chapters/conclusion.aux
+Database file #1: refs.bib
+Warning--empty journal in GQL
+Warning--empty journal in QSI
+Warning--empty journal in GEN
+Warning--empty journal in VF2
+Warning--empty journal in SPA
+Warning--empty journal in GAD
+Warning--empty journal in Ull
+Warning--empty journal in Turbosio
+Warning--empty journal in STWig
+You've used 9 entries,
+            2930 wiz_defined-function locations,
+            644 strings with 5703 characters,
+and the built_in function-call counts, 3762 in all, are:
+= -- 279
+> -- 99
+< -- 9
++ -- 44
+- -- 27
+* -- 200
+:= -- 620
+add.period$ -- 18
+call.type$ -- 9
+change.case$ -- 54
+chr.to.int$ -- 9
+cite$ -- 18
+duplicate$ -- 351
+empty$ -- 325
+format.name$ -- 36
+if$ -- 721
+int.to.chr$ -- 1
+int.to.str$ -- 1
+missing$ -- 63
+newline$ -- 43
+num.names$ -- 36
+pop$ -- 198
+preamble$ -- 1
+purify$ -- 45
+quote$ -- 0
+skip$ -- 136
+stack$ -- 0
+substring$ -- 107
+swap$ -- 99
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 81
+warning$ -- 9
+while$ -- 27
+width$ -- 0
+write$ -- 96
+(There were 9 warnings)

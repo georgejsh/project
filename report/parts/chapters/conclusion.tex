@@ -1,0 +1,9 @@
+\chapter{CONCLUSION AND FUTURE WORK}
+\label{chap:concl}
+
+\section{Conclusion}
+
+\hspace{10mm} The state-of-art algorithms for Subgraph Isomorphism use different pruning techniques to avoid the false candidates as early as possible.  The part of the algorithm which considers all possibility is the most time consuming part. Since we can't avoid checking some possibility the one efficient way of making this part faster is decreasing the number of candidates. The complexity of the pruning technique helps to remove more false candidates thus  making the algorithm faster. The possibility checking part is made faster by using GPU by checking different possibilities in different threads. Thus a million possibilities are checked in parallel.\\
+\hspace{10mm} The dynamic version of the problem is trying to answer the problem after many edge deletions and additions. The trivial cases are the adding in query and deletion in data. The other two cases makes the problem hard. Whether there exists a faster method(poly-time) for processing them in parallel still remains as an open problem. 
+
+
