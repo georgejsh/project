@@ -25,6 +25,7 @@ void dfs(int i){
 int main()
 {
  float ran,var,maxvar,curravg=0,currvar=0;
+ int maxlettersize;
  srand(time(0)); 
  //printf("Enter the Vertex Count: ");
  scanf("%d",&verc);
@@ -42,6 +43,9 @@ int main()
  //printf("Variance: ");
  scanf("%f",&var);
  //var*=verc;
+ scanf("%d",&maxlettersize);
+ maxlettersize=std::max(maxlettersize,1); 
+ maxlettersize=std::min(maxlettersize,26);
  edge=(int *)malloc(sizeof(int)*(verc*(avgoutdeg+var)));
  tree=(int *)malloc(sizeof(int)*(verc*(avgoutdeg+var)));
  memset(tree,0,sizeof(int)*(verc*(avgoutdeg+var)));
@@ -77,6 +81,11 @@ int main()
 // printf("%d\n",ei);
  for(i=0;i<=verc;i++)
   printf("%d ",ver[i]);
+ printf("\n");
+ for(i=0;i<verc;i++){
+  ran=(int)rand();  
+  printf("%c ",65+(int)ran%maxlettersize);
+ }
  printf("\n");
  
  for(i=0;i<ei;i++)

@@ -96,7 +96,7 @@ Parallel check of existence of query graph.\\
 
 \hspace{10mm} The procedure $PermandComb$ finds all possibilites of the query graph. For eachvertex of query graph it finds all possibilites(current possibilities x CvsGen(u)). If the possibilies is more than we can store(MP), $CheckMap$ is called on all current possibilities and the wrong ones are removed. This will make the P <MP. At last when i= $|V(q)|$, P has all valid possibilites. The procedure $CheckMap$ checks the existence on non tree edges are actually present in the current 	mapping. If $CheckMap$ retruns true it is reported as a correct mapping.
 \section{Inferences}
-\hspace{10mm}The parallel version needs to store the mapped NEC for each node in the data graph. This is asking for a space of $O(n*N(q))$ where $n$ is number of nodes in datagraph and $N(q)$ is number of  NEC in query graph. The time taken for executing complete graphs on various test scenarios are given in table below. These results are obtained on a NVIDIA CUDA supported GPU with 580 MHz speed. The number of nodes in query graph and data graph are given in the 1st column and 1st row.(*) Random Graphs.
+\hspace{10mm}The parallel version needs to store the mapped NEC for each node in the data graph. This is asking for a space of $O(n*N(q))$ where $n$ is number of nodes in datagraph and $N(q)$ is number of  NEC in query graph. The time taken for executing complete graphs on various test scenarios are given in table below. These results are obtained on a NVIDIA CUDA supported GPU with 580 MHz speed. The number of nodes in query graph and data graph are given in the 1st column and 1st row.(*) Random Node data Graphs.
 	\begin{table}[htbp]
     \centering
     \label{tab:mytable}
