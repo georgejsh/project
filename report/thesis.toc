@@ -38,5 +38,5 @@
 \contentsline {section}{\numberline {4.6}Adding Edge in Data Graph}{18}{section.4.6}
 \contentsline {subsection}{\numberline {4.6.1}Parallel Execution}{19}{subsection.4.6.1}
 \contentsline {subsection}{\numberline {4.6.2}Inferences}{20}{subsection.4.6.2}
-\contentsline {chapter}{\numberline {5}CONCLUSION AND FUTURE WORK}{21}{chapter.5}
+\contentsline {chapter}{\numberline {5}CONCLUSION}{21}{chapter.5}
 \contentsline {section}{\numberline {5.1}Conclusion}{21}{section.5.1}
