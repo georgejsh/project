@@ -22,7 +22,7 @@
 \BOOKMARK [1][-]{section.2.3}{Implemented Algorithm}{chapter.2}% 22
 \BOOKMARK [2][-]{subsection.2.3.1}{TurboIso}{section.2.3}% 23
 \BOOKMARK [2][-]{subsection.2.3.2}{Inferences}{section.2.3}% 24
-\BOOKMARK [0][-]{chapter.3}{Prallel Implementation}{}% 25
+\BOOKMARK [0][-]{chapter.3}{Parallel Implementation}{}% 25
 \BOOKMARK [1][-]{section.3.1}{Introduction}{chapter.3}% 26
 \BOOKMARK [1][-]{section.3.2}{Algorithm}{chapter.3}% 27
 \BOOKMARK [1][-]{section.3.3}{Inferences}{chapter.3}% 28
@@ -39,4 +39,3 @@
 \BOOKMARK [2][-]{subsection.4.6.1}{Parallel Execution}{section.4.6}% 39
 \BOOKMARK [2][-]{subsection.4.6.2}{Inferences}{section.4.6}% 40
 \BOOKMARK [0][-]{chapter.5}{CONCLUSION}{}% 41
-\BOOKMARK [1][-]{section.5.1}{Conclusion}{chapter.5}% 42

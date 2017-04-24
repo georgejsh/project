@@ -12,31 +12,30 @@
 \contentsline {section}{\numberline {2.1}Problem}{3}{section.2.1}
 \contentsline {section}{\numberline {2.2}Related Work}{4}{section.2.2}
 \contentsline {subsection}{\numberline {2.2.1}Generic Algorithm}{4}{subsection.2.2.1}
-\contentsline {subsection}{\numberline {2.2.2}Ullmann Algorithm}{5}{subsection.2.2.2}
-\contentsline {subsection}{\numberline {2.2.3}VF2 Algorithm}{5}{subsection.2.2.3}
-\contentsline {subsection}{\numberline {2.2.4}QucikSi Algorithm}{6}{subsection.2.2.4}
-\contentsline {subsection}{\numberline {2.2.5}GADDI Algorithm}{6}{subsection.2.2.5}
-\contentsline {subsection}{\numberline {2.2.6}GraphQL Algorithm}{7}{subsection.2.2.6}
-\contentsline {subsection}{\numberline {2.2.7}SPath Algorithm}{7}{subsection.2.2.7}
-\contentsline {subsection}{\numberline {2.2.8}STWig Algorithm}{7}{subsection.2.2.8}
-\contentsline {section}{\numberline {2.3}Implemented Algorithm}{8}{section.2.3}
-\contentsline {subsection}{\numberline {2.3.1}TurboIso}{8}{subsection.2.3.1}
-\contentsline {subsection}{\numberline {2.3.2}Inferences}{9}{subsection.2.3.2}
-\contentsline {chapter}{\numberline {3}Prallel Implementation}{10}{chapter.3}
-\contentsline {section}{\numberline {3.1}Introduction}{10}{section.3.1}
-\contentsline {section}{\numberline {3.2}Algorithm}{10}{section.3.2}
-\contentsline {section}{\numberline {3.3}Inferences}{13}{section.3.3}
-\contentsline {section}{\numberline {3.4}Failed Approach}{13}{section.3.4}
-\contentsline {chapter}{\numberline {4}Dynamic Operations}{15}{chapter.4}
-\contentsline {section}{\numberline {4.1}Introduction}{15}{section.4.1}
-\contentsline {section}{\numberline {4.2}Intermediate Answers}{15}{section.4.2}
-\contentsline {section}{\numberline {4.3}Adding Edge to Query Graph}{16}{section.4.3}
-\contentsline {section}{\numberline {4.4}Deleting Edge from Data Graph}{16}{section.4.4}
-\contentsline {section}{\numberline {4.5}Deleting Edge from Query Graph}{17}{section.4.5}
-\contentsline {subsection}{\numberline {4.5.1}Deleting a non-tree edge}{17}{subsection.4.5.1}
-\contentsline {subsection}{\numberline {4.5.2}Deleting a tree edge}{17}{subsection.4.5.2}
-\contentsline {section}{\numberline {4.6}Adding Edge in Data Graph}{18}{section.4.6}
-\contentsline {subsection}{\numberline {4.6.1}Parallel Execution}{19}{subsection.4.6.1}
-\contentsline {subsection}{\numberline {4.6.2}Inferences}{20}{subsection.4.6.2}
-\contentsline {chapter}{\numberline {5}CONCLUSION}{21}{chapter.5}
-\contentsline {section}{\numberline {5.1}Conclusion}{21}{section.5.1}
+\contentsline {subsection}{\numberline {2.2.2}Ullmann Algorithm}{6}{subsection.2.2.2}
+\contentsline {subsection}{\numberline {2.2.3}VF2 Algorithm}{6}{subsection.2.2.3}
+\contentsline {subsection}{\numberline {2.2.4}QucikSi Algorithm}{7}{subsection.2.2.4}
+\contentsline {subsection}{\numberline {2.2.5}GADDI Algorithm}{7}{subsection.2.2.5}
+\contentsline {subsection}{\numberline {2.2.6}GraphQL Algorithm}{8}{subsection.2.2.6}
+\contentsline {subsection}{\numberline {2.2.7}SPath Algorithm}{8}{subsection.2.2.7}
+\contentsline {subsection}{\numberline {2.2.8}STWig Algorithm}{8}{subsection.2.2.8}
+\contentsline {section}{\numberline {2.3}Implemented Algorithm}{9}{section.2.3}
+\contentsline {subsection}{\numberline {2.3.1}TurboIso}{9}{subsection.2.3.1}
+\contentsline {subsection}{\numberline {2.3.2}Inferences}{11}{subsection.2.3.2}
+\contentsline {chapter}{\numberline {3}Parallel Implementation}{12}{chapter.3}
+\contentsline {section}{\numberline {3.1}Introduction}{12}{section.3.1}
+\contentsline {section}{\numberline {3.2}Algorithm}{12}{section.3.2}
+\contentsline {section}{\numberline {3.3}Inferences}{17}{section.3.3}
+\contentsline {section}{\numberline {3.4}Failed Approach}{19}{section.3.4}
+\contentsline {chapter}{\numberline {4}Dynamic Operations}{21}{chapter.4}
+\contentsline {section}{\numberline {4.1}Introduction}{21}{section.4.1}
+\contentsline {section}{\numberline {4.2}Intermediate Answers}{21}{section.4.2}
+\contentsline {section}{\numberline {4.3}Adding Edge to Query Graph}{22}{section.4.3}
+\contentsline {section}{\numberline {4.4}Deleting Edge from Data Graph}{22}{section.4.4}
+\contentsline {section}{\numberline {4.5}Deleting Edge from Query Graph}{23}{section.4.5}
+\contentsline {subsection}{\numberline {4.5.1}Deleting a non-tree edge}{23}{subsection.4.5.1}
+\contentsline {subsection}{\numberline {4.5.2}Deleting a tree edge}{23}{subsection.4.5.2}
+\contentsline {section}{\numberline {4.6}Adding Edge in Data Graph}{25}{section.4.6}
+\contentsline {subsection}{\numberline {4.6.1}Parallel Execution}{28}{subsection.4.6.1}
+\contentsline {subsection}{\numberline {4.6.2}Inferences}{28}{subsection.4.6.2}
+\contentsline {chapter}{\numberline {5}CONCLUSION}{29}{chapter.5}

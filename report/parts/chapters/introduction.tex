@@ -1,14 +1,14 @@
 \chapter{INTRODUCTION}
 \label{chap:intro}
 \section{Overview}
-Consider that you have pattern and you want to know where all the pattern coming in the data. The pattern can be easily represented as a graph. The actual data can be image video, network of people, etc. The graphs can be used to represent any form of data. The pattern matching has a wide range of application. It is not an easy problem. Since it need a lots of checking at each node. It is similar to placing the pattern at each node in the graph and trying to rotate,flip, etc to find a similar representation. There are lots of possibilities that can match but there may be only small number of actual matching. We need to find them.
+\hspace{10mm}Consider  a pattern which you want to know where it is coming in the large data. The pattern can be easily represented as a graph. The actual data can be image video, network of people, etc. The graphs can be used to represent any form of data. The pattern matching has a wide applications. It is not an easy problem. It need a lots of checking at each node. It is similar to placing the pattern at each node in the graph and trying to rotate, flip, etc... to find a similar representation. There are lots of possibilities that can match but there may be only small number of actual matching. We need to find them.
 \section{Motivation}
-As I mentioned before this problem is having lots of applications since the current era is trying to extract lots of features from images, videos,audios,etc using many pattern matching techniques.  Since the problem is NP Hard researchers have focussed on efficiently solving the problem in practice. The numerous cores of GPUs may help us to solve this problem faster. Each node search is independent so they can be done in parallel. This is the  primary motivation on trying to do the sub-graph isomorphism in GPUs. 
+\hspace{10mm}As I mentioned before this problem is having lots of applications since the current era is trying to extract lots of features from images, videos,audios,etc using many pattern matching techniques.  Since the problem is NP Hard researchers, have focussed on efficiently solving the problem in practice. The numerous cores of GPUs may help us to solve this problem faster. Each node search is independent so they can be done in parallel. This is the  primary motivation on trying to do the sub-graph isomorphism in GPUs. 
 \section{Major Contribution}
 \begin{itemize}
-	\item{Implemented a state-of-Art solution in GPU}
+	\item{Implemented an efficient solution in GPU}
 	\item{Dynamic SubGraph Queries are handled in parallel}
 \end{itemize}
 
 \section{Organization of Thesis}
-	Subgraph Isomorphism chapter \ref{chap:subgraph} discuss the problem and the state-of-art algorithms. A detailed comparison of various algorithms in terms of different pruning techniques is performed.Parallel Implementation \ref{chap:pi} discuss the parallel version of the TurboIso algorithm. Dynamic Operations\ref{chap:dynamic} discuss the implementation of the dynamic version of the problem. The challenges involved in its implementation are discussed in depth.
+	\hspace{10mm}Subgraph Isomorphism chapter \ref{chap:subgraph} discuss the problem and the state-of-art algorithms. A detailed comparison of various algorithms in terms of different pruning techniques is performed. Parallel implementation \ref{chap:pi} discuss the parallel version of the TurboIso algorithm. Dynamic Operations \ref{chap:dynamic} discuss the implementation of the dynamic version of the problem. The challenges involved in its implementation are discussed in more depth in each chapter.
