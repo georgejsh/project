@@ -72,7 +72,7 @@ Data Graph
 \subsection{Generic Algorithm}
 \label{sec:ga}
 	\hspace{10mm}The generic algorithm\cite{GEN} for subgraph isomorphism will help us to study the aspects of state-of-art algorithms in deep. It is presented in Algorithm  \ref{Graph Isomorphism}.\\
-\begin{algorithm}[H]
+\begin{breakablealgorithm}[H]
 \caption{Subgraph Search}
 \label{Graph Isomorphism}
 \textbf{Input}: Data Graph $D$,Query Graph $Q$.\\
@@ -109,7 +109,7 @@ Data Graph
 \end{enumerate}
 \end{enumerate}
 \end{algorithmic}
-\end{algorithm}
+\end{breakablealgorithm}
 \hspace{10mm}The procedure $FindCandidates$ finds the vertices in datagraph which can be mapped to query vertex. The procedure $NextVertex$ finds the next vertex in querygraph which should be tried to be mapped.
 
 \hspace{10mm}The $RefinedSet$  prunes out some nodes in the candidate set.  The $ IsJoinable$ checks whether the map is right. The $UpdateState$ moves to next state (adds new vertex to map).The $RestoreState$ removes the vertex from map and thus restores the state.

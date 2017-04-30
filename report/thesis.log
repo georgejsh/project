@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016/Debian) (preloaded format=pdflatex 2017.1.19)  25 APR 2017 04:04
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016/Debian) (preloaded format=pdflatex 2017.1.19)  25 APR 2017 13:35
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1450,18 +1450,13 @@ Underfull \hbox (badness 10000) in paragraph at lines 90--94
 
  []
 
-
-Underfull \hbox (badness 10000) in paragraph at lines 74--112
-
- []
-
 [4]
 Overfull \hbox (8.45522pt too wide) in paragraph at lines 115--116
 [] \OT1/pxr/m/n/12 The $\U/eur/m/n/12 RefinedSet$ \OT1/pxr/m/n/12 prunes out so
 me nodes in the can-di-date set. The $\U/eur/m/n/12 IsJoinable$
  []
 
-[5] [6] [7] [8]
+[5] [6] [7]
 Overfull \hbox (4.14424pt too wide) in paragraph at lines 231--232
 [][] 
  []
@@ -1476,15 +1471,12 @@ Overfull \hbox (4.14424pt too wide) in paragraph at lines 251--252
 [][] 
  []
 
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-
+[8]
 Underfull \hbox (badness 10000) in paragraph at lines 361--364
 
  []
 
-[9] [10]) [11]
+[9]) [10]
 \openout2 = `parts/chapters/parallel.aux'.
 
  (./parts/chapters/parallel.tex
@@ -1499,7 +1491,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 37--42
 
  []
 
-[12
+[11
 
 
 
@@ -1520,43 +1512,43 @@ Underfull \hbox (badness 10000) in paragraph at lines 77--82
 
  []
 
+[12]
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
 [13]
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[14]
-
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-[15] [16] <Dchange.png, id=458, 2198.2125pt x 1616.0375pt>
+[14] [15] <Dchange.png, id=453, 2198.2125pt x 1616.0375pt>
 File: Dchange.png Graphic file (type png)
  <use Dchange.png>
 Package pdftex.def Info: Dchange.png used on input line 426.
 (pdftex.def)             Requested size: 215.64333pt x 158.53087pt.
 
-<Qchange.png, id=459, 2198.2125pt x 1616.0375pt>
+<Qchange.png, id=454, 2198.2125pt x 1616.0375pt>
 File: Qchange.png Graphic file (type png)
  <use Qchange.png>
 Package pdftex.def Info: Qchange.png used on input line 433.
 (pdftex.def)             Requested size: 215.64333pt x 158.53087pt.
 
-<fb.png, id=460, 2198.2125pt x 1616.0375pt>
+<fb.png, id=455, 2198.2125pt x 1616.0375pt>
 File: fb.png Graphic file (type png)
  <use fb.png>
 Package pdftex.def Info: fb.png used on input line 440.
 (pdftex.def)             Requested size: 215.64333pt x 158.53087pt.
 
-<CA.png, id=461, 2198.2125pt x 1616.0375pt>
+<CA.png, id=456, 2198.2125pt x 1616.0375pt>
 File: CA.png Graphic file (type png)
  <use CA.png>
 Package pdftex.def Info: CA.png used on input line 447.
 (pdftex.def)             Requested size: 215.64333pt x 158.53087pt.
- [17 <./Dchange.png (PNG copy)>] [18 <./Qchange.png (PNG copy)> <./fb.png (PNG 
+ [16 <./Dchange.png (PNG copy)>] [17 <./Qchange.png (PNG copy)> <./fb.png (PNG 
 copy)>]
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[19 <./CA.png (PNG copy)>]) [20]
+[18 <./CA.png (PNG copy)>]) [19]
 \openout2 = `parts/chapters/dynamic.aux'.
 
  (./parts/chapters/dynamic.tex
@@ -1569,38 +1561,38 @@ Overfull \hbox (73.95738pt too wide) in paragraph at lines 7--14
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[21
+[20
 
 
 
-] [22]
+] [21]
 Underfull \hbox (badness 10000) in paragraph at lines 78--81
 
  []
 
-[23]
+[22]
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[24]
+[23]
 Underfull \hbox (badness 10000) in paragraph at lines 195--198
 
  []
 
-[25]
+[24]
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[26] [27]) [28]
+[25] [26]) [27]
 \openout2 = `parts/chapters/conclusion.aux'.
 
  (./parts/chapters/conclusion.tex
 CHAPTER 5.
-) [29
+) [28
 
 
 
-] (./thesis.bbl) [30
+] (./thesis.bbl) [29
 
 
 ]
@@ -1622,13 +1614,13 @@ LaTeX Warning: There were multiply-defined labels.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 164.
  ) 
 Here is how much of TeX's memory you used:
- 22779 strings out of 493013
- 417639 string characters out of 6135682
- 574098 words of memory out of 5000000
+ 22778 strings out of 493013
+ 417632 string characters out of 6135682
+ 575088 words of memory out of 5000000
  25584 multiletter control sequences out of 15000+600000
  28047 words of font info for 82 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 55i,13n,66p,1500b,991s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 55i,13n,66p,1500b,1114s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texliv
 e/texmf-dist/fonts/type1/public/amsfonts/euler/eufm10.pfb></usr/share/texlive/t
 exmf-dist/fonts/type1/public/amsfonts/euler/eurm10.pfb></usr/share/texlive/texm
@@ -1640,10 +1632,10 @@ pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/sh
 are/texlive/texmf-dist/fonts/type1/urw/palatino/uplb8a.pfb></usr/share/texlive/
 texmf-dist/fonts/type1/urw/palatino/uplr8a.pfb></usr/share/texlive/texmf-dist/f
 onts/type1/urw/palatino/uplri8a.pfb>
-Output written on thesis.pdf (39 pages, 454309 bytes).
+Output written on thesis.pdf (38 pages, 454206 bytes).
 PDF statistics:
- 637 PDF objects out of 1000 (max. 8388607)
- 574 compressed objects within 6 object streams
- 185 named destinations out of 1000 (max. 500000)
+ 633 PDF objects out of 1000 (max. 8388607)
+ 571 compressed objects within 6 object streams
+ 184 named destinations out of 1000 (max. 500000)
  366 words of extra memory for PDF output out of 10000 (max. 10000000)
 
